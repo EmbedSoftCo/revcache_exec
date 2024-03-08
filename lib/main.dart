@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
-import 'mappage.dart';
 import 'serial_port_page.dart';
+import 'mappage.dart';
 
 void main() {
   print("starting thing");
@@ -23,7 +23,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyan),
         useMaterial3: true,
       ),
-      home: const SelectPort(),
+      home: const MapPage(title: 'Flutter Serial Port example'),
+      //home: const SelectPort(),
     );
   }
 }

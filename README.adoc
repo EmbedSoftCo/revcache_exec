@@ -1,0 +1,9 @@
+= Reverse geocache admin application
+
+
+== Getting Started
+
+path smoothing: https://pub.dev/packages/latlong2
+
+
+== todo
