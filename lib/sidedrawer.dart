@@ -1,14 +1,11 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_libserialport/flutter_libserialport.dart';
 
 import 'serial_port_page.dart';
-import 'mappage.dart';
 
 
 
 class SideDrawer extends StatelessWidget {
-  const SideDrawer({Key? key}) : super(key: key);
+  const SideDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
