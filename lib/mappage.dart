@@ -65,7 +65,4 @@ class _MapPageState extends State<MapPage> {
         ));
   }
 
-  void onPressed() {
-    print("wtf");
-  }
 }
