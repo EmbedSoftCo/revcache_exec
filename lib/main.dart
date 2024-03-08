@@ -5,9 +5,6 @@ import 'serial_port_page.dart';
 import 'mappage.dart';
 
 void main() {
-  print("starting thing");
-  var ports = SerialPort.availablePorts;
-  print(ports);
   runApp(const MyApp());
 }
 
