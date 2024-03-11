@@ -43,13 +43,10 @@ class _SelectedPortState extends State<SelectedPort> {
     );
   }
 
-  String getSerialData() {
-    widget.port.openRead();
-    //Uint8List read = widget.port.read(5, timeout: 5000);
-    //widget.port.close();
-    //return utf8.decode(read, allowMalformed: true);
-    return "test";
-    //print(read);
+  @override
+  void initState() {
+    super.initState();
+    initStream();
   }
 
   void initStream() {
@@ -64,14 +61,5 @@ class _SelectedPortState extends State<SelectedPort> {
         strbuff.write(utf8.decode(data));
       });
     });
-    /*
-*/
-    //setState(() => print("init"));
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    init_stream();
   }
 }
