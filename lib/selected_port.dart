@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
@@ -10,14 +14,7 @@ class SelectedPort extends StatefulWidget {
 }
 
 class _SelectedPortState extends State<SelectedPort> {
-  @override
-  void initState() {
-    super.initState();
-  }
-  void initprint() {
-    setState(() => print("init"));
-  }
-
+  late StreamSubscription<Uint8List> stream;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,5 +33,33 @@ class _SelectedPortState extends State<SelectedPort> {
       //body: StreamBuilder(stream: stream, builder: builder),
       body: const Text("AD"),
     );
+  }
+
+  String getSerialData() {
+    widget.port.openRead();
+    //Uint8List read = widget.port.read(5, timeout: 5000);
+    //widget.port.close();
+    //return utf8.decode(read, allowMalformed: true);
+    return "test";
+    //print(read);
+  }
+
+  void init_stream() {
+    setState(() {
+      getSerialData();
+      final reader = SerialPortReader(widget.port);
+      stream = reader.stream.listen((data) {
+        print('received: ${utf8.decode(data)}');
+      });
+    });
+    /*
+*/
+    //setState(() => print("init"));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    init_stream();
   }
 }
