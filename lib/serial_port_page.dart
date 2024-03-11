@@ -1,3 +1,4 @@
+import 'package:app/selected_port.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
@@ -34,6 +35,13 @@ class _SelectPortState extends State<SelectPort> {
     initPorts();
   }
 
+  void openSerialPortPage(SerialPort selectport ) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SelectedPort(port: selectport)),
+              );
+      }
+
   void initPorts() {
     setState(() => availablePorts = SerialPort.availablePorts);
   }
@@ -54,6 +62,9 @@ class _SelectPortState extends State<SelectPort> {
                   return ExpansionTile(
                     title: Text(address),
                     children: [
+                      TextButton(
+                          child: const Text("Connect"),
+                          onPressed: () => openSerialPortPage(port)),
                       CardListTile('Description', port.description),
                       CardListTile('Transport', port.transport.toTransport()),
                       CardListTile('USB Bus', port.busNumber?.toPadded()),
@@ -71,8 +82,8 @@ class _SelectPortState extends State<SelectPort> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.refresh),
           onPressed: initPorts,
+          child: const Icon(Icons.refresh),
         ),
       ),
     );
@@ -83,7 +94,7 @@ class CardListTile extends StatelessWidget {
   final String name;
   final String? value;
 
-  CardListTile(this.name, this.value);
+  const CardListTile(this.name, this.value, {super.key});
 
   @override
   Widget build(BuildContext context) {
