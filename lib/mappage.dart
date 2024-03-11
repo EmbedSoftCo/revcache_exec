@@ -33,7 +33,7 @@ class _MapPageState extends State<MapPage> {
             PolylineLayer(
               polylines: [
                 Polyline(
-                  points: const [
+                  points: const [ //TODO: make dynamic from mcu
                     LatLng(52.03492, 5.57092),
                     LatLng(52.0347732, 5.570698),
                     LatLng(52.0335682, 5.570569),

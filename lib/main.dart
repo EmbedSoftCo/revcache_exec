@@ -39,8 +39,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyan),
         useMaterial3: true,
       ),
-      home: const MapPage(title: 'Flutter Serial Port example'),
-      //home: const SelectPort(),
+      //home: const MapPage(title: 'Flutter Serial Port example'),
+      home: const SelectPort(),
     );
   }
 }
