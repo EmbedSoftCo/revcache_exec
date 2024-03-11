@@ -22,14 +22,14 @@ class _SelectedPortState extends State<SelectedPort> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Selected Port'),
+        title: Text(
+          widget.port.name ?? "",
+          textScaler: const TextScaler.linear(2.0),
+        ),
         centerTitle: true,
       ),
       body: Center(
-        child: Text(widget.port.name??"",
-textScaler: TextScaler.linear(3.0),
-        ),
-      ),    
+      ),
     );
   }
 }
