@@ -8,21 +8,6 @@ import 'serial_port_page.dart';
 import 'mappage.dart';
 
 void main() {
-  var port = SerialPort.availablePorts;
-  print(port);
-  if (port.isNotEmpty) {
-    var p = SerialPort(port[0]);
-    p.openReadWrite();
-    final reader = SerialPortReader(p);
-    reader.stream.listen((data) {
-      print('received: ${utf8.decode(data)}');
-    });
-    reader.stream.toList();
-    //var read = p.read(20);
-    // print(read);
-    //  print(utf8.decode(read, allowMalformed: true));
-    p.close();
-  }
   runApp(const MyApp());
 }
 
