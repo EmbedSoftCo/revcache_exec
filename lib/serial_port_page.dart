@@ -35,12 +35,22 @@ class _SelectPortState extends State<SelectPort> {
     initPorts();
   }
 
-  void openSerialPortPage(SerialPort selectport ) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SelectedPort(port: selectport)),
-              );
+  void openSerialPortPage(SerialPort selectport) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SelectedPort(port: selectport)),
+    ).then((data) {
+      // executes on pop
+      print(data);
+      if (data is SerialPort) {
+        print("data is SerialPort");
+        data.close();
+      } else {
+        print("data is not SerialPort");
+        print(data.runtimeType);
       }
+    });
+  }
 
   void initPorts() {
     setState(() => availablePorts = SerialPort.availablePorts);

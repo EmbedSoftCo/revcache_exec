@@ -22,6 +22,11 @@ class _SelectedPortState extends State<SelectedPort> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          leading: BackButton(onPressed: () {
+                stream.cancel();
+                widget.port.close();
+              Navigator.pop(context,widget.port );
+          }),
         title: Text(
           widget.port.name ?? "",
           textScaler: const TextScaler.linear(2.0),
