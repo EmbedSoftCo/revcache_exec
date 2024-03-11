@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   flutter_map: ^6.1.0
   flutter_libserialport: ^0.4.0
+  logging: ^1.2.0
 
 dev_dependencies:
   flutter_test:
