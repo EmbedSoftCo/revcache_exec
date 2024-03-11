@@ -17,10 +17,14 @@ void main() {
   if (port.isNotEmpty) {
     var p = SerialPort(port[0]);
     p.openReadWrite();
-   Uint8List bytes = utf8.encode('H'); 
-    p.write(bytes ,timeout: 5000);
-    var read = p.read(bytes.length, timeout: 5000);
-    print(read);
+    final reader = SerialPortReader(p);
+    reader.stream.listen((data) {
+      print('received: ${utf8.decode(data)}');
+    });
+    reader.stream.toList();
+    //var read = p.read(20);
+    // print(read);
+    //  print(utf8.decode(read, allowMalformed: true));
     p.close();
   }
   
