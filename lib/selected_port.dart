@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
 class SelectedPort extends StatefulWidget {
@@ -14,16 +15,19 @@ class SelectedPort extends StatefulWidget {
 }
 
 class _SelectedPortState extends State<SelectedPort> {
+  final Logger logger = Logger("SelectedPort");
   late StreamSubscription<Uint8List> stream;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          leading: BackButton(onPressed: () {
-                stream.cancel();
-                widget.port.close();
-              Navigator.pop(context,widget.port );
-          }),
+        leading: BackButton(onPressed: () {
+          stream.cancel();
+          widget.port.close();
+          logger.fine("strbuff");
+          logger.fine(strbuff.toString());
+          Navigator.pop(context, widget.port);
+        }),
         title: Text(
           widget.port.name ?? "",
           textScaler: const TextScaler.linear(2.0),
