@@ -8,10 +8,6 @@ import 'serial_port_page.dart';
 import 'mappage.dart';
 
 void main() {
-  var sp_conf = SerialPortConfig();
-  sp_conf.baudRate = 115200;
-  sp_conf.bits = 8;
-
   var port = SerialPort.availablePorts;
   print(port);
   if (port.isNotEmpty) {
@@ -27,7 +23,6 @@ void main() {
     //  print(utf8.decode(read, allowMalformed: true));
     p.close();
   }
-  
   runApp(const MyApp());
 }
 
