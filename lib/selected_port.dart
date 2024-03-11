@@ -11,6 +11,14 @@ class SelectedPort extends StatefulWidget {
 
 class _SelectedPortState extends State<SelectedPort> {
   @override
+  void initState() {
+    super.initState();
+  }
+  void initprint() {
+    setState(() => print("init"));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
