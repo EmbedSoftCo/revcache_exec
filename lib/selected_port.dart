@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:app/mappage.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
@@ -20,7 +21,22 @@ class _SelectedPortState extends State<SelectedPort> {
   final Logger logger = Logger("SelectedPort");
   late StreamSubscription<Uint8List> stream;
   late StringBuffer strbuff;
-  
+  late String str_data;
+
+  void onPressed() {
+    String str;
+    if (strbuff.isEmpty) {
+      str = str_data;
+    } else {
+      str = strbuff.toString();
+    }
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => MapPage(title: "TEST", data: str)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,11 +53,11 @@ class _SelectedPortState extends State<SelectedPort> {
           ),
           centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      //body: StreamBuilder(stream: stream, builder: builder),
-      body: const Text("AD"),
-    );
+        //body: StreamBuilder(stream: stream, builder: builder),
+        body: Center(
+          child: FloatingActionButton(
+              onPressed: onPressed, child: const Icon(Icons.map)),
+        ));
   }
 
   @override
@@ -63,8 +79,8 @@ class _SelectedPortState extends State<SelectedPort> {
           strbuff.write(utf8.decode(data));
           str_data = strbuff.toString();
           strbuff.clear();
-        } else {
-          strbuff.write(utf8.decode(data));
+        }else{
+        strbuff.write(utf8.decode(data));
         }
       });
     });

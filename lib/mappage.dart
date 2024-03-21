@@ -1,25 +1,33 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:logging/logging.dart';
+import 'package:mcu_gps_parser/McuData.dart';
+import 'package:mcu_gps_parser/mcu_gps_parser.dart';
 import 'sidedrawer.dart';
 
 class MapPage extends StatefulWidget {
   final String title;
+  final String data;
 
-  const MapPage({super.key, required this.title});
+  const MapPage({super.key, required this.title, required this.data});
 
   @override
   State<MapPage> createState() => _MapPageState();
 }
 
 class _MapPageState extends State<MapPage> {
+  final Logger logger = Logger("mappage");
+  late List<McuData> McuDatalisting;
+  late List<LatLng> coordlist;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
         ),
-        drawer: const SideDrawer(),
         body: FlutterMap(
           options: const MapOptions(
             initialCenter: LatLng(52.03492, 5.57092),
@@ -33,14 +41,7 @@ class _MapPageState extends State<MapPage> {
             PolylineLayer(
               polylines: [
                 Polyline(
-                  points: const [ //TODO: make dynamic from mcu
-                    LatLng(52.03492, 5.57092),
-                    LatLng(52.0347732, 5.570698),
-                    LatLng(52.0335682, 5.570569),
-                    LatLng(52.033440, 5.570901),
-                    LatLng(52.034595, 5.571805),
-                    LatLng(52.0347732, 5.570698),
-                  ],
+                  points: coordlist,
                   color: Colors.pink,
                 ),
               ],
@@ -57,7 +58,7 @@ class _MapPageState extends State<MapPage> {
                 TextSourceAttribution(
                   'OpenStreetMap contributors',
                   onTap: () =>
-                      print(Uri.parse('https://openstreetmap.org/copyright')),
+                      logger.finer(Uri.parse('https://openstreetmap.org/copyright')),
                 ),
               ],
             ),
@@ -65,4 +66,18 @@ class _MapPageState extends State<MapPage> {
         ));
   }
 
+  @override
+  void initState() {
+    super.initState();
+    createState();
+  }
+
+  void createState() {
+    setState(() {
+      final List t = json.decode(widget.data);
+      McuDatalisting = t.map((item) => McuData.fromJson(item)).toList();
+      coordlist = McuDatalisting.toLatLngList();
+      logger.fine(coordlist);
+    });
+  }
 }
