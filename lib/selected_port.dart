@@ -24,17 +24,18 @@ class _SelectedPortState extends State<SelectedPort> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: BackButton(onPressed: () {
-          stream.cancel();
-          widget.port.close();
-          logger.fine("strbuff");
-          logger.fine(strbuff.toString());
-          Navigator.pop(context, widget.port);
-        }),
-        title: Text(
-          widget.port.name ?? "",
-          textScaler: const TextScaler.linear(2.0),
+        appBar: AppBar(
+          leading: BackButton(onPressed: () {
+            stream.cancel();
+            widget.port.close();
+            logger.fine(strbuff.toString());
+            Navigator.pop(context, widget.port);
+          }),
+          title: Text(
+            widget.port.name ?? "",
+            textScaler: const TextScaler.linear(2.0),
+          ),
+          centerTitle: true,
         ),
         centerTitle: true,
       ),
@@ -58,7 +59,13 @@ class _SelectedPortState extends State<SelectedPort> {
       // if data is available in the buffer call the anonymous function in the listen()
       stream = reader.stream.listen((data) {
         // store all incoming serial data
-        strbuff.write(utf8.decode(data));
+        if (utf8.decode(data).contains(']')) {
+          strbuff.write(utf8.decode(data));
+          str_data = strbuff.toString();
+          strbuff.clear();
+        } else {
+          strbuff.write(utf8.decode(data));
+        }
       });
     });
   }
