@@ -2,6 +2,8 @@ import 'package:app/selected_port.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
+import 'custom/cardlisttile.dart';
+
 extension IntToString on int {
   String toHex() => '0x${toRadixString(16)}';
   String toPadded([int width = 3]) => toString().padLeft(width, '0');
@@ -41,13 +43,8 @@ class _SelectPortState extends State<SelectPort> {
       MaterialPageRoute(builder: (context) => SelectedPort(port: selectport)),
     ).then((data) {
       // executes on pop
-      print(data);
       if (data is SerialPort) {
-        print("data is SerialPort");
         data.close();
-      } else {
-        print("data is not SerialPort");
-        print(data.runtimeType);
       }
     });
   }
@@ -95,23 +92,6 @@ class _SelectPortState extends State<SelectPort> {
           onPressed: initPorts,
           child: const Icon(Icons.refresh),
         ),
-      ),
-    );
-  }
-}
-
-class CardListTile extends StatelessWidget {
-  final String name;
-  final String? value;
-
-  const CardListTile(this.name, this.value, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        title: Text(value ?? 'N/A'),
-        subtitle: Text(name),
       ),
     );
   }

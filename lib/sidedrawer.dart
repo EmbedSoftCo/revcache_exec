@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'serial_port_page.dart';
 
-
-
 class SideDrawer extends StatelessWidget {
   const SideDrawer({super.key});
 

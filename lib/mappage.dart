@@ -6,7 +6,6 @@ import 'package:latlong2/latlong.dart';
 import 'package:logging/logging.dart';
 import 'package:mcu_gps_parser/McuData.dart';
 import 'package:mcu_gps_parser/mcu_gps_parser.dart';
-import 'sidedrawer.dart';
 
 class MapPage extends StatefulWidget {
   final String title;
@@ -46,19 +45,12 @@ class _MapPageState extends State<MapPage> {
                 ),
               ],
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                // Navigate back to first route when tapped.
-              },
-              child: const Text('Go back!'),
-            ),
             RichAttributionWidget(
               attributions: [
                 TextSourceAttribution(
                   'OpenStreetMap contributors',
-                  onTap: () =>
-                      logger.finer(Uri.parse('https://openstreetmap.org/copyright')),
+                  onTap: () => logger
+                      .finer(Uri.parse('https://openstreetmap.org/copyright')),
                 ),
               ],
             ),
@@ -74,10 +66,14 @@ class _MapPageState extends State<MapPage> {
 
   void createState() {
     setState(() {
-      final List t = json.decode(widget.data);
-      McuDatalisting = t.map((item) => McuData.fromJson(item)).toList();
-      coordlist = McuDatalisting.toLatLngList();
-      logger.fine(coordlist);
+      try {
+        final List t = json.decode(widget.data);
+        McuDatalisting = t.map((item) => McuData.fromJson(item)).toList();
+        coordlist = McuDatalisting.toLatLngList();
+        logger.fine(coordlist);
+      } catch (e) {
+        logger.severe(e);
+      }
     });
   }
 }
