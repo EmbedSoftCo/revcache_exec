@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 import 'package:logging/logging.dart';
+import 'package:toastification/toastification.dart';
 
 String inputbuff = ""; // global buffer for the received chars over serial
 
@@ -57,7 +58,35 @@ class _SelectedPortState extends State<SelectedPort> {
     }
   }
 
-  void sendData() {
+  void successToast() {
+    toastification.show(
+      context: context,
+      type: ToastificationType.success,
+      style: ToastificationStyle.minimal,
+      title: const Text("Questions succesfully Send"),
+      //description: Widget,
+      alignment: Alignment.bottomLeft,
+      autoCloseDuration: const Duration(seconds: 4),
+      animationBuilder: (
+        context,
+        animation,
+        alignment,
+        child,
+      ) {
+        return ScaleTransition(
+          scale: animation,
+          child: child,
+        );
+      },
+      borderRadius: BorderRadius.circular(12.0),
+      boxShadow: highModeShadow,
+      showProgressBar: true,
+      closeButtonShowType: CloseButtonShowType.onHover,
+      dragToClose: true,
+    );
+  }
+
+  void sendData() async {
     String str = "";
     int i = 0;
     for (var q in questions) {
@@ -76,6 +105,23 @@ class _SelectedPortState extends State<SelectedPort> {
 
     widget.port.write(Uint8List.fromList(sq.codeUnits));
     widget.port.write(data);
+    strbuff.clear();
+    successToast();
+
+    // start background process to check if the last 2 chars in the strbuff are ACK or NACK
+    Timer.periodic(const Duration(milliseconds: 5), (timer) {
+      if (strbuff.toString().contains("NACK")) {
+        // do something when not successfull
+        logger.info("NACK received, resending data");
+        widget.port.write(data);
+      } else if (strbuff.toString().contains("ACK")) {
+        // do something when successfull
+        // show on screen
+        logger.info("ACK received, Showing toast");
+        successToast();
+        timer.cancel();
+      }
+    });
   }
 
   int iter = 0;
