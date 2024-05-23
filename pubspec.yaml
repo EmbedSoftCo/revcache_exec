@@ -40,6 +40,7 @@ dependencies:
   logging: ^1.2.0
   mcu_gps_parser:
     path: ../mcu_gps_parser
+  toastification: ^2.0.0
 
 dev_dependencies:
   flutter_test:
