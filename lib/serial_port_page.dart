@@ -5,8 +5,15 @@ import 'package:flutter_libserialport/flutter_libserialport.dart';
 import 'custom/cardlisttile.dart';
 
 extension IntToString on int {
+  // helper functions added onto the int type
+
+  /// convert int to hex string
   String toHex() => '0x${toRadixString(16)}';
+
+  /// convert int to a padded string, default 3 digits
   String toPadded([int width = 3]) => toString().padLeft(width, '0');
+
+  /// convert int to SerialPortTransport type name string, returns Unknown if invalid
   String toTransport() {
     switch (this) {
       case SerialPortTransport.usb:
@@ -31,12 +38,15 @@ class SelectPort extends StatefulWidget {
 class _SelectPortState extends State<SelectPort> {
   var availablePorts = [];
 
+  ///Called when the widget is initialized
   @override
   void initState() {
     super.initState();
     initPorts();
   }
 
+  /// Create a new page for the selected serialport
+  /// when the opened page is closed, the serialport is closed
   void openSerialPortPage(SerialPort selectport) {
     Navigator.push(
       context,
@@ -49,10 +59,13 @@ class _SelectPortState extends State<SelectPort> {
     });
   }
 
+  ///setup internal data.
+  ///using setState to redraw the UI and a arrow function to execute to get the data
   void initPorts() {
     setState(() => availablePorts = SerialPort.availablePorts);
   }
 
+  /// Build the UI for this page
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -60,6 +73,8 @@ class _SelectPortState extends State<SelectPort> {
         appBar: AppBar(
           title: const Text('Flutter Serial Port example'),
         ),
+
+        /// build the body of the page this forms a Tree with the Scrollbar as the root
         body: Scrollbar(
           child: ListView(
             children: [

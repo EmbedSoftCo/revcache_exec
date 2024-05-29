@@ -18,9 +18,13 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
+  /// instantiate logger for this page
   final Logger logger = Logger("mappage");
-  late List<McuData> McuDatalisting;
+  //create list of objects containing a coord and temp
+  late List<McuData> mcuDatalisting;
+  //create list of objects with x and y coords
   late List<LatLng> coordlist;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,6 +41,8 @@ class _MapPageState extends State<MapPage> {
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'eu.vdwege.app',
             ),
+
+            /// create a Line through all point in the coordlist to show the route
             PolylineLayer(
               polylines: [
                 Polyline(
@@ -67,11 +73,19 @@ class _MapPageState extends State<MapPage> {
   void createState() {
     setState(() {
       try {
+        ///convert passed in data to json
         final List t = json.decode(widget.data);
-        McuDatalisting = t.map((item) => McuData.fromJson(item)).toList();
-        coordlist = McuDatalisting.toLatLngList();
+
+        ///turn Json data into list of objects
+        mcuDatalisting = t.map((item) => McuData.fromJson(item)).toList();
+
+        /// extract x and y coords from list of objects
+        coordlist = mcuDatalisting.toLatLngList();
+
+        ///print the list of coords
         logger.fine(coordlist);
       } catch (e) {
+        /// if an error occurs print it
         logger.severe(e);
       }
     });

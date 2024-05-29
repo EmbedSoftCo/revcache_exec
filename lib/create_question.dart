@@ -38,7 +38,6 @@ class _QuestionCreatorState extends State<QuestionCreator> {
           c: Coord(
               x: double.parse(textctrls[5].text),
               y: double.parse(textctrls[6].text)));
-      print(data.toRawJson());
       Navigator.pop(
         context,
         data,

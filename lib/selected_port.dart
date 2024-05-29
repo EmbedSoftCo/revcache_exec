@@ -22,13 +22,22 @@ class SelectedPort extends StatefulWidget {
 }
 
 class _SelectedPortState extends State<SelectedPort> {
+  /// instantiate logger for this page
   final Logger logger = Logger("SelectedPort");
 
+  /// create buffers to  collect serial data
+  /// StreamSubscription<Uint8List> is the stream
   late StreamSubscription<Uint8List> stream;
+
+  /// StringBuffer is the string representation of the streams characters
   late StringBuffer strbuff;
+
+  /// create list of QuestionData structures to be converted to JSON and send using serial
   late List<QuestionData> questions;
 
-  void onPressed() {
+  /// callback for button to show map.
+  /// this converts the stringbuffer to a string, checks its not empty and creates the Map and passes the string as data
+  void showMap() {
     String str = strbuff.toString();
 
     logger.fine(str);
@@ -43,6 +52,7 @@ class _SelectedPortState extends State<SelectedPort> {
             builder: (context) => MapPage(title: "Map", data: str)));
   }
 
+  /// callback for button to add question. creates page with stepper widget
   void addQuestion() async {
     var retdata = await Navigator.push(context,
             MaterialPageRoute(builder: (context) => const QuestionCreator()))
@@ -106,6 +116,7 @@ class _SelectedPortState extends State<SelectedPort> {
     widget.port.write(Uint8List.fromList(sq.codeUnits));
     widget.port.write(data);
     strbuff.clear();
+    print("DataSend");
     successToast();
 
     // start background process to check if the last 2 chars in the strbuff are ACK or NACK
@@ -180,7 +191,7 @@ class _SelectedPortState extends State<SelectedPort> {
         child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
           FloatingActionButton(
               heroTag: "mapbtn",
-              onPressed: onPressed,
+              onPressed: showMap,
               child: const Icon(Icons.map)),
           FloatingActionButton(
               heroTag: "qbtn",
