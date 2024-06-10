@@ -74,7 +74,7 @@ class _SelectPortState extends State<SelectPort> {
           title: const Text('Flutter Serial Port example'),
         ),
 
-        /// build the body of the page this forms a Tree with the Scrollbar as the root
+        /// Build the body of the page this forms a Tree with the Scrollbar as the root
         body: Scrollbar(
           child: ListView(
             children: [
