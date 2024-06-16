@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:logging/logging.dart';
-import 'package:mcu_gps_parser/McuData.dart';
-import 'package:mcu_gps_parser/mcu_gps_parser.dart';
+import 'package:app/parser.dart';
 
 class MapPage extends StatefulWidget {
   final String title;
-  final String data;
+  final Parser data;
 
   const MapPage({super.key, required this.title, required this.data});
 
@@ -21,7 +20,6 @@ class _MapPageState extends State<MapPage> {
   /// instantiate logger for this page
   final Logger logger = Logger("mappage");
   //create list of objects containing a coord and temp
-  late List<McuData> mcuDatalisting;
   //create list of objects with x and y coords
   late List<LatLng> coordlist;
 
@@ -32,9 +30,9 @@ class _MapPageState extends State<MapPage> {
           title: Text(widget.title),
         ),
         body: FlutterMap(
-          options: const MapOptions(
-            initialCenter: LatLng(52.03492, 5.57092),
-            initialZoom: 9.2,
+          options: MapOptions(
+            initialCenter: coordlist.elementAt(0),
+            initialZoom: 20.0,
           ),
           children: [
             TileLayer(
@@ -72,22 +70,10 @@ class _MapPageState extends State<MapPage> {
 
   void createState() {
     setState(() {
-      try {
-        ///convert passed in data to json
-        final List t = json.decode(widget.data);
-
-        ///turn Json data into list of objects
-        mcuDatalisting = t.map((item) => McuData.fromJson(item)).toList();
-
-        /// extract x and y coords from list of objects
-        coordlist = mcuDatalisting.toLatLngList();
-
-        ///print the list of coords
-        logger.fine(coordlist);
-      } catch (e) {
-        /// if an error occurs print it
-        logger.severe(e);
-      }
+      coordlist = widget.data.gpscoords();
     });
+    for (var coord in coordlist) {
+      print(coord);
+    }
   }
 }

@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:byte_extensions/byte_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:mcu_gps_parser/Coord.dart';
 
@@ -34,7 +36,6 @@ class _QuestionCreatorState extends State<QuestionCreator> {
           correct: textctrls[1].text,
           incorrect1: textctrls[2].text,
           incorrect2: textctrls[3].text,
-          incorrect3: textctrls[4].text,
           c: Coord(
               x: double.parse(textctrls[5].text),
               y: double.parse(textctrls[6].text)));
@@ -165,20 +166,6 @@ class _QuestionCreatorState extends State<QuestionCreator> {
               },
             )),
         Step(
-            title: const Text("Incorrect Answer"),
-            content: TextFormField(
-              key: _formFieldKeys[4],
-              controller: textctrls[4],
-              decoration: const InputDecoration(
-                  hintText: "Please input a incorrect answer"),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Invalid input";
-                }
-                return null;
-              },
-            )),
-        Step(
             title: const Text("Coordinates"),
             content: Column(
               children: [
@@ -221,7 +208,6 @@ class QuestionData {
   String correct;
   String incorrect1;
   String incorrect2;
-  String incorrect3;
   Coord c;
   //String coordinatey;
 
@@ -230,7 +216,6 @@ class QuestionData {
     required this.correct,
     required this.incorrect1,
     required this.incorrect2,
-    required this.incorrect3,
     required this.c,
   });
 
@@ -244,7 +229,6 @@ class QuestionData {
         correct: json["correct"],
         incorrect1: json["incorrect1"],
         incorrect2: json["incorrect2"],
-        incorrect3: json["incorrect3"],
         c: Coord.fromJson(json["Coord"]),
       );
 
@@ -253,12 +237,49 @@ class QuestionData {
         "correct": correct,
         "incorrect1": incorrect1,
         "incorrect2": incorrect2,
-        "incorrect3": incorrect3,
         "Coord": c.toJson(),
       };
 
   @override
   String toString() {
-    return 'QuestionData{question: $question, correct: $correct, incorrect1: $incorrect1, incorrect2: $incorrect2, incorrect3: $incorrect3, cx: ${c.x} cy: ${c.y}}';
+    return 'QuestionData{question: $question, correct: $correct, incorrect1: $incorrect1, incorrect2: $incorrect2, cx: ${c.x} cy: ${c.y}}';
+  }
+  //String str = "";
+  //int i = 0;
+  //for (var q in questions) {
+  //  str += "\"Q$i\":${q.toRawJson()},\n";
+  //  i++;
+  //}
+
+  //Uint8List data = Uint8List.fromList(utf8.encode(str));
+  //if (str.length > 999) {
+  //  throw Exception("Data too long");
+  //}
+  //String sq = "SQ:${str.length}";
+
+  //logger.fine(sq);
+  //logger.fine(str);
+
+  //widget.port.write(Uint8List.fromList(sq.codeUnits));
+  //widget.port.write(data);
+  Uint8List toBytes() {
+    BytesBuilder bb = BytesBuilder();
+    bb.add(question.codeUnits);
+    bb.addByte(0x00);
+    bb.add(correct.codeUnits);
+    bb.addByte(0x00);
+    bb.add(incorrect1.codeUnits);
+    bb.addByte(0x00);
+    bb.add(incorrect2.codeUnits);
+    bb.addByte(0x00);
+    var x = (c.x * 1000000).toInt();
+    var y = (c.y * 1000000).toInt();
+    var lx = x.asBytes(type: IntType.int32).cast<int>();
+    var ly = y.asBytes(type: IntType.int32).cast<int>();
+    bb.add(lx);
+    bb.add(ly);
+    bb.addByte(0x00);
+    bb.addByte(0x00);
+    return bb.toBytes();
   }
 }

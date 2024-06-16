@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:app/create_question.dart';
 import 'package:app/custom/cardlisttile.dart';
 import 'package:app/mappage.dart';
+import 'package:app/parser.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
@@ -12,6 +13,14 @@ import 'package:logging/logging.dart';
 import 'package:toastification/toastification.dart';
 
 String inputbuff = ""; // global buffer for the received chars over serial
+String arrayToHex(Uint8List data) {
+  var result = '';
+  for (final x in data) {
+    var str = '00' + x.toRadixString(16);
+    result += str.substring(str.length - 2, str.length);
+  }
+  return result.toUpperCase();
+}
 
 class SelectedPort extends StatefulWidget {
   final SerialPort port;
@@ -30,26 +39,26 @@ class _SelectedPortState extends State<SelectedPort> {
   late StreamSubscription<Uint8List> stream;
 
   /// StringBuffer is the string representation of the streams characters
-  late StringBuffer strbuff;
+  late List<int> bytebuff;
 
   /// create list of QuestionData structures to be converted to JSON and send using serial
   late List<QuestionData> questions;
 
   /// callback for button to show map.
   /// this converts the stringbuffer to a string, checks its not empty and creates the Map and passes the string as data
+
   void showMap() {
-    String str = strbuff.toString();
-
-    logger.fine(str);
-
-    if (!strbuff.isNotEmpty) {
+    if (bytebuff.isEmpty) {
       return;
     }
+    print(bytebuff.length);
 
+    var parser = Parser(bytebuff);
+    print(parser.toString());
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => MapPage(title: "Map", data: str)));
+            builder: (context) => MapPage(title: "Map", data: parser)));
   }
 
   /// callback for button to add question. creates page with stepper widget
@@ -97,42 +106,43 @@ class _SelectedPortState extends State<SelectedPort> {
   }
 
   void sendData() async {
-    String str = "";
-    int i = 0;
+    int sum = 0;
+
     for (var q in questions) {
-      str += "\"Q$i\":${q.toRawJson()},\n";
-      i++;
+      sum += q.toBytes().lengthInBytes;
     }
 
-    Uint8List data = Uint8List.fromList(utf8.encode(str));
-    if (str.length > 999) {
-      throw Exception("Data too long");
+    if (sum > 511) {
+      return;
     }
-    String sq = "SQ:${str.length}";
+    var buffer = Uint8List(0);
 
-    logger.fine(sq);
-    logger.fine(str);
+    for (var q in questions) {
+      buffer + q.toBytes();
+    }
+    print(buffer);
+    //widget.port.write(q.toBytes());
 
-    widget.port.write(Uint8List.fromList(sq.codeUnits));
-    widget.port.write(data);
-    strbuff.clear();
-    print("DataSend");
+//
+//    String str = "";
+//    int i = 0;
+//    for (var q in questions) {
+//      str += "\"Q$i\":${q.toRawJson()},\n";
+//      i++;
+//    }
+//
+//    Uint8List data = Uint8List.fromList(utf8.encode(str));
+//    if (str.length > 999) {
+//      throw Exception("Data too long");
+//    }
+//    String sq = "SQ:${str.length}";
+//
+//    logger.fine(sq);
+//    logger.fine(str);
+//
+//    widget.port.write(Uint8List.fromList(sq.codeUnits));
+//    widget.port.write(data);
     successToast();
-
-    // start background process to check if the last 2 chars in the strbuff are ACK or NACK
-    Timer.periodic(const Duration(milliseconds: 5), (timer) {
-      if (strbuff.toString().contains("NACK")) {
-        // do something when not successfull
-        logger.info("NACK received, resending data");
-        widget.port.write(data);
-      } else if (strbuff.toString().contains("ACK")) {
-        // do something when successfull
-        // show on screen
-        logger.info("ACK received, Showing toast");
-        successToast();
-        timer.cancel();
-      }
-    });
   }
 
   int iter = 0;
@@ -144,7 +154,6 @@ class _SelectedPortState extends State<SelectedPort> {
         leading: BackButton(onPressed: () {
           stream.cancel();
           widget.port.close();
-          logger.fine(strbuff.toString());
           Navigator.pop(context, widget.port);
         }),
         title: Text(
@@ -179,7 +188,6 @@ class _SelectedPortState extends State<SelectedPort> {
                     CardListTile("correct Answer", q.correct),
                     CardListTile("incorrect Answer1", q.incorrect1),
                     CardListTile("incorrect Answer2", q.incorrect2),
-                    CardListTile("incorrect Answer3", q.incorrect3),
                     CardListTile("coord x", q.c.x.toString()),
                     CardListTile("coord y", q.c.y.toString()),
                   ]);
@@ -219,12 +227,12 @@ class _SelectedPortState extends State<SelectedPort> {
       // open the port to read
       widget.port.openReadWrite();
       final reader = SerialPortReader(widget.port);
-      strbuff = StringBuffer();
+      bytebuff = List.empty(growable: true);
       // if data is available in the buffer call the anonymous function in the listen()
       stream = reader.stream.listen((data) {
         // store all incoming serial data
         //setState(() {
-        strbuff.write(utf8.decode(data));
+        bytebuff.addAll(data);
         //});
       });
     });

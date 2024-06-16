@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  byte_extensions:
+    dependency: "direct main"
+    description:
+      name: byte_extensions
+      sha256: d69db1bb5926638d937f2382fe7ad97772e61a4fb842a3143d1510224666385c
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   characters:
     dependency: transitive
     description:

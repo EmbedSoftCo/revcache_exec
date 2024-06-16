@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   flutter_map: ^6.1.0
   flutter_libserialport: ^0.4.0
+  byte_extensions: ^0.0.3
   logging: ^1.2.0
   mcu_gps_parser:
     path: ../mcu_gps_parser
